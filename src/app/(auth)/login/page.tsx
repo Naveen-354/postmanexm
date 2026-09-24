@@ -11,8 +11,21 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "./actions"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
 
-export default function LoginForm() {
+export default async function LoginForm({
+  searchParams,
+}: {
+  searchParams: { error?: string }
+}) {
+  const { error } = await searchParams;
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) {
+    redirect("/dashboard")
+  }
+
   return (
     <div className="flex h-screen w-full items-center justify-center px-4">
       <Card className="mx-auto max-w-sm">
@@ -23,6 +36,11 @@ export default function LoginForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="bg-destructive/15 text-destructive text-sm p-3 rounded-md mb-4">
+              {error}
+            </div>
+          )}
           <form action={login}>
             <div className="grid gap-4">
               <div className="grid gap-2">

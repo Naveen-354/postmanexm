@@ -1,7 +1,16 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (user) {
+    redirect("/dashboard")
+  }
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground text-center p-6">
       <h1 className="text-5xl font-bold tracking-tighter mb-4">APIFlow</h1>
